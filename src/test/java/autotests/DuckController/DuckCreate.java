@@ -17,14 +17,14 @@ public class DuckCreate extends TestNGCitrusSpringSupport {
     @CitrusTest
     public void createRubberDuck(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 8.03, "rubber", "quack-quack", "ACTIVE");
-        validateCreateResponse(runner, "rubber");
+        validateCreateResponse(runner, "{\n \"material\": \"rubber\"\n}");
     }
 
     @Test(description = "Создать утку с material = wood")
     @CitrusTest
     public void createWoodDuck(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "brown", 10.5, "wood", "quack", "ACTIVE");
-        validateCreateResponse(runner, "wood");
+        validateCreateResponse(runner, "{\n \"material\": \"wood\"\n}");
     }
 
     public void createDuck(TestCaseRunner runner, String color, double height, String material,
@@ -46,7 +46,7 @@ public class DuckCreate extends TestNGCitrusSpringSupport {
         );
     }
 
-    public void validateCreateResponse(@Optional @CitrusResource TestCaseRunner runner, String expectedMaterial) {
+    public void validateCreateResponse(@Optional @CitrusResource TestCaseRunner runner, String responseMessage) {
         runner.$(
                 http()
                         .client("http://localhost:2222")
@@ -54,7 +54,7 @@ public class DuckCreate extends TestNGCitrusSpringSupport {
                         .response(HttpStatus.OK)
                         .message()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(expectedMaterial)
+                        .body(responseMessage)
         );
     }
 }
