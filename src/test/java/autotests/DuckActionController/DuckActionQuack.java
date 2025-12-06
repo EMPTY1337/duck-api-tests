@@ -28,6 +28,7 @@ public class DuckActionQuack extends TestNGCitrusSpringSupport {
         validateOddId(runner);
     }
 
+    // TODO: SHIFT-AQA-2
     @Test(description = "Проверка кряканья утки с корректным четным ID и корректным звуком")
     @CitrusTest
     public void quackWithEvenId(@Optional @CitrusResource TestCaseRunner runner) {
