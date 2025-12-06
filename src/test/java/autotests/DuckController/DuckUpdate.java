@@ -13,13 +13,13 @@ import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 import static com.consol.citrus.validation.DelegatingPayloadVariableExtractor.Builder.fromBody;
 
 public class DuckUpdate extends TestNGCitrusSpringSupport {
-    String url = "http://localhost:2222";
+    private static final String URL = "http://localhost:2222";
 
     @Test(description = "Изменить цвет и высоту уточки")
     @CitrusTest
     public void updateColorAndHeight(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 6, "rubber", "quack", "ACTIVE");
-        extractDuckId(runner);
+        extractId(runner);
         updateDuck(runner, "${duckId}", "red", 15.5, "rubber", "quack", "ACTIVE");
         validateResponseUpdate(runner);
     }
@@ -28,7 +28,7 @@ public class DuckUpdate extends TestNGCitrusSpringSupport {
     @CitrusTest
     public void updateColorAndSound(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "red", 7, "rubber", "quack", "ACTIVE");
-        extractDuckId(runner);
+        extractId(runner);
         updateDuck(runner, "${duckId}", "yellow", 0.03, "rubber", "quack-quack-quack", "ACTIVE");
         validateResponseUpdate(runner);
     }
@@ -37,7 +37,7 @@ public class DuckUpdate extends TestNGCitrusSpringSupport {
                            String sound, String wingsState) {
         runner.$(
                 http()
-                        .client(url)
+                        .client(URL)
                         .send()
                         .post("/api/duck/create")
                         .message()
@@ -51,10 +51,10 @@ public class DuckUpdate extends TestNGCitrusSpringSupport {
         );
     }
 
-    public void extractDuckId(TestCaseRunner runner) {
+    public void extractId(TestCaseRunner runner) {
         runner.$(
                 http()
-                        .client(url)
+                        .client(URL)
                         .receive()
                         .response()
                         .message()
@@ -67,7 +67,7 @@ public class DuckUpdate extends TestNGCitrusSpringSupport {
                            String material, String sound, String wingsState) {
         runner.$(
                 http()
-                        .client(url)
+                        .client(URL)
                         .send()
                         .put("/api/duck/update")
                         .queryParam("id", id)
@@ -82,7 +82,7 @@ public class DuckUpdate extends TestNGCitrusSpringSupport {
     public void validateResponseUpdate(TestCaseRunner runner) {
         runner.$(
                 http()
-                        .client(url)
+                        .client(URL)
                         .receive()
                         .response(HttpStatus.OK)
                         .message()

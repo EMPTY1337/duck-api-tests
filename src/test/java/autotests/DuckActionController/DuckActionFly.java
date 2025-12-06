@@ -14,117 +14,69 @@ import static com.consol.citrus.validation.DelegatingPayloadVariableExtractor.Bu
 
 public class DuckActionFly extends TestNGCitrusSpringSupport {
 
-    @Test(description = "Проверка полета утки с Active крыльями и существующим id")
+    private static final String URL = "http://localhost:2222";
+
+    @Test(description = "Проверка полета утки с Active крыльями")
     @CitrusTest
     public void activeWings(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 8.03, "rubber", "quack", "ACTIVE");
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response()
-                        .message()
-                        .extract(fromBody().expression("$.id", "duckId"))
-        );
+        extractId(runner);
         duckFly(runner, "${duckId}");
-        validateResponseActiveWingsFly(runner, "{\n \"message\": \"I am flying :)\"\n}");
-
+        validateResponse(runner, "{\n \"message\": \"I am flying :)\"\n}");
     }
 
-    @Test(description = "Проверка полета утки с Fixed крыльями и существующим id")
+    @Test(description = "Проверка полета утки с Fixed крыльями")
     @CitrusTest
     public void fixedWings(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 8.03, "rubber", "quack", "FIXED");
-
-        //получение id
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response()
-                        .message()
-                        .extract(fromBody().expression("$.id", "duckId"))
-        );
-        //
+        extractId(runner);
         duckFly(runner, "${duckId}");
-        validateResponseFixedWingsFly(runner, "{\n \"message\": \"I can not fly :C\"\n}");
-
+        validateResponse(runner, "{\n \"message\": \"I can not fly :C\"\n}");
     }
 
-    @Test(description = "Проверка полета утки с Undefined крыльями и существующим id")
+    @Test(description = "Проверка полета утки с Undefined крыльями")
     @CitrusTest
     public void undefinedWings(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 8.03, "rubber", "quack", "UNDEFINED");
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response()
-                        .message()
-                        .extract(fromBody().expression("$.id", "duckId"))
-        );
+        extractId(runner);
         duckFly(runner, "${duckId}");
-        validateResponseUndefinedWingsFly(runner, "{\n \"message\": \"Wings are not detected :(\"\n}");
-
+        validateResponse(runner, "{\n \"message\": \"Wings are not detected :(\"\n}");
     }
 
-    public void createDuck(TestCaseRunner runner, String color, double height, String material, String sound, String wingsState) {
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .send()
-                        .post("/api/duck/create")
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body("{\n" +
-                                "\"color\": \"" + color + "\",\n" +
-                                "\"height\": " + height + ",\n" +
-                                "\"material\": \"" + material + "\",\n" +
-                                "\"sound\": \"" + sound + "\",\n" +
-                                "\"wingsState\": \"" + wingsState + "\"}"));
+    private void createDuck(TestCaseRunner runner, String color, double height, String material, String sound, String wingsState) {
+        runner.$(http()
+                .client(URL)
+                .send()
+                .post("/api/duck/create")
+                .message()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("{\"color\":\"" + color + "\",\"height\":" + height + ",\"material\":\"" + material + "\",\"sound\":\"" + sound + "\",\"wingsState\":\"" + wingsState + "\"}"));
     }
 
-    public void  duckFly(TestCaseRunner runner, String id){
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .send()
-                        .get("/api/duck/action/fly")
-                        .queryParam("id", id));
-
+    private void extractId(TestCaseRunner runner) {
+        runner.$(http()
+                .client(URL)
+                .receive()
+                .response(HttpStatus.OK)
+                .message()
+                .extract(fromBody().expression("$.id", "duckId")));
     }
 
-    public void validateResponseActiveWingsFly(TestCaseRunner runner, String responseMessage) {         //валидация при существующим ID и Active
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response(HttpStatus.OK)
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(responseMessage) );
-
+    private void duckFly(TestCaseRunner runner, String id) {
+        runner.$(http()
+                .client(URL)
+                .send()
+                .get("/api/duck/action/fly")
+                .queryParam("id", id));
     }
-    public void validateResponseFixedWingsFly(TestCaseRunner runner, String responseMessage) {         //валидация при существующим ID и Fixed
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response(HttpStatus.OK)
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(responseMessage) );
 
-    }
-    public void validateResponseUndefinedWingsFly(TestCaseRunner runner, String responseMessage) {         //валидация при существующим ID и Undefined
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response(HttpStatus.OK)
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(responseMessage) );
-
+    private void validateResponse(TestCaseRunner runner, String responseMessage) {
+        runner.$(http()
+                .client(URL)
+                .receive()
+                .response(HttpStatus.OK)
+                .message()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(responseMessage));
     }
 }

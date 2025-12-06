@@ -13,27 +13,28 @@ import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 import static com.consol.citrus.validation.DelegatingPayloadVariableExtractor.Builder.fromBody;
 
 public class DuckDelete extends TestNGCitrusSpringSupport {
+    private static final String URL = "http://localhost:2222";
 
     @Test(description = "Успешное удаление уточки")
     @CitrusTest
     public void successDeleteDuck(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 0.03, "rubber", "quack", "ACTIVE");
-        extractDuckId(runner);
+        extractId(runner);
         deleteDuck(runner, "${duckId}");
-        validateResponseSuccessDelete(runner);
+        validateResponseSuccessDelete(runner,"{\"message\": \"Duck is deleted\"}");
     }
 
     @Test(description = "Удаление уточки с несуществующим ID")
     @CitrusTest
     public void deleteNonExistingDuck(@Optional @CitrusResource TestCaseRunner runner) {
         deleteDuck(runner, "999999");
-        validateResponseNotFound(runner);
+        validateResponseNotFound(runner, "{\"message\": \"Duck not found\"}");
     }
 
     public void createDuck(TestCaseRunner runner, String color, double height, String material, String sound, String wingsState) {
         runner.$(
                 http()
-                        .client("http://localhost:2222")
+                        .client(URL)
                         .send()
                         .post("/api/duck/create")
                         .message()
@@ -47,11 +48,11 @@ public class DuckDelete extends TestNGCitrusSpringSupport {
         );
     }
 
-    //Извлечение id созданной уточки в отдельном методе
-    public void extractDuckId(TestCaseRunner runner) {
+
+    public void extractId(TestCaseRunner runner) {
         runner.$(
                 http()
-                        .client("http://localhost:2222")
+                        .client(URL)
                         .receive()
                         .response()
                         .message()
@@ -63,34 +64,34 @@ public class DuckDelete extends TestNGCitrusSpringSupport {
     public void deleteDuck(TestCaseRunner runner, String idDuck) {
         runner.$(
                 http()
-                        .client("http://localhost:2222")
+                        .client(URL)
                         .send()
                         .delete("/api/duck/delete")
                         .queryParam("id", idDuck)
         );
     }
 
-    public void validateResponseSuccessDelete(@Optional @CitrusResource TestCaseRunner runner) {
+    public void validateResponseSuccessDelete(@Optional @CitrusResource TestCaseRunner runner, String responseMessage) {
         runner.$(
                 http()
-                        .client("http://localhost:2222")
+                        .client(URL)
                         .receive()
                         .response(HttpStatus.OK)
                         .message()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body("{\"message\": \"Duck is deleted\"}")
+                        .body(responseMessage)
         );
     }
 
-    public void validateResponseNotFound(@Optional @CitrusResource TestCaseRunner runner) {
+    public void validateResponseNotFound(@Optional @CitrusResource TestCaseRunner runner, String responseMessage) {
         runner.$(
                 http()
-                        .client("http://localhost:2222")
+                        .client(URL)
                         .receive()
                         .response(HttpStatus.NOT_FOUND)
                         .message()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body("{\"message\": \"Duck not found\"}")
+                        .body(responseMessage)
         );
     }
 }

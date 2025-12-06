@@ -13,48 +13,47 @@ import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 
 public class DuckCreate extends TestNGCitrusSpringSupport {
 
+    private static final String URL = "http://localhost:2222";
+
     @Test(description = "Создать утку с material = rubber")
     @CitrusTest
     public void createRubberDuck(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 8.03, "rubber", "quack-quack", "ACTIVE");
-        validateCreateResponse(runner, "{\n \"material\": \"rubber\"\n}");
+        validateCreateResponse(runner, "rubber", "yellow", "quack-quack");
     }
 
     @Test(description = "Создать утку с material = wood")
     @CitrusTest
     public void createWoodDuck(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "brown", 10.5, "wood", "quack", "ACTIVE");
-        validateCreateResponse(runner, "{\n \"material\": \"wood\"\n}");
+        validateCreateResponse(runner, "wood", "brown", "quack");
     }
 
-    public void createDuck(TestCaseRunner runner, String color, double height, String material,
-                           String sound, String wingsState) {
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .send()
-                        .post("/api/duck/create")
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body("{" +
-                                "\"color\": \"" + color + "\"," +
-                                "\"height\": " + height + "," +
-                                "\"material\": \"" + material + "\"," +
-                                "\"sound\": \"" + sound + "\"," +
-                                "\"wingsState\": \"" + wingsState + "\"" +
-                                "}")
-        );
+    private void createDuck(TestCaseRunner runner, String color, double height, String material,
+                            String sound, String wingsState) {
+        runner.$(http()
+                .client(URL)
+                .send()
+                .post("/api/duck/create")
+                .message()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("{\"color\":\"" + color + "\",\"height\":" + height + ",\"material\":\"" + material + "\",\"sound\":\"" + sound + "\",\"wingsState\":\"" + wingsState + "\"}"));
     }
 
-    public void validateCreateResponse(@Optional @CitrusResource TestCaseRunner runner, String responseMessage) {
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response(HttpStatus.OK)
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(responseMessage)
-        );
+    private void validateCreateResponse(TestCaseRunner runner, String material, String color, String sound) {
+        runner.$(http()
+                .client(URL)
+                .receive()
+                .response(HttpStatus.OK)
+                .message()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("{\n" +
+                        "  \"id\": \"@ignore@\",\n" +
+                        "  \"color\": \"" + color + "\",\n" +
+                        "  \"height\": \"@ignore@\",\n" +
+                        "  \"material\": \"" + material + "\",\n" +
+                        "  \"sound\": \"" + sound + "\",\n" +
+                        "  \"wingsState\": \"ACTIVE\"\n" +
+                        "}"));
     }
 }

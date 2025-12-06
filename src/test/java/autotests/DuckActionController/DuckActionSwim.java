@@ -13,18 +13,13 @@ import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 import static com.consol.citrus.validation.DelegatingPayloadVariableExtractor.Builder.fromBody;
 
 public class DuckActionSwim extends TestNGCitrusSpringSupport {
+
+    private static final String URL = "http://localhost:2222";
     @Test(description = "Проверка того, что уточка плывет с существующим id")
     @CitrusTest
     public void successfulSwim(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 8.03, "rubber", "quack", "FIXED");
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response()
-                        .message()
-                        .extract(fromBody().expression("$.id", "duckId"))
-        );
+        extractId(runner);
         duckSwim(runner, "${duckId}");
         validateResponseSuccessfulSwim(runner, "{\n \"message\": \"I'm swimming\"\n}");
 
@@ -34,14 +29,7 @@ public class DuckActionSwim extends TestNGCitrusSpringSupport {
     @CitrusTest
     public void invalidSwim(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 8.03, "rubber", "quack", "FIXED");
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response()
-                        .message()
-                        .extract(fromBody().expression("$.id", "duckId"))
-        );
+        extractId(runner);
         duckSwim(runner, "54");
         validateResponseInvalidSwim(runner, "{\n \"message\": \"Paws are not found ((((\"\n}");
 
@@ -49,7 +37,7 @@ public class DuckActionSwim extends TestNGCitrusSpringSupport {
     public void createDuck(TestCaseRunner runner, String color, double height, String material, String sound, String wingsState) {
         runner.$(
                 http()
-                        .client("http://localhost:2222")
+                        .client(URL)
                         .send()
                         .post("/api/duck/create")
                         .message()
@@ -62,10 +50,22 @@ public class DuckActionSwim extends TestNGCitrusSpringSupport {
                                                 "\"wingsState\": \"" + wingsState + "\"}"));
     }
 
+    public void extractId(TestCaseRunner runner) {
+        runner.$(
+                http()
+                        .client(URL)
+                        .receive()
+                        .response()
+                        .message()
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .extract(fromBody().expression("$.id", "duckId"))
+        );
+    }
+
     public void  duckSwim(TestCaseRunner runner, String id){
         runner.$(
                 http()
-                        .client("http://localhost:2222")
+                        .client(URL)
                         .send()
                         .get("/api/duck/action/swim")
                         .queryParam("id", id));
@@ -75,7 +75,7 @@ public class DuckActionSwim extends TestNGCitrusSpringSupport {
     public void validateResponseSuccessfulSwim(TestCaseRunner runner, String responseMessage) {         //валидация при существующим ID
         runner.$(
                 http()
-                        .client("http://localhost:2222")
+                        .client(URL)
                         .receive()
                         .response(HttpStatus.OK)
                         .message()
@@ -87,7 +87,7 @@ public class DuckActionSwim extends TestNGCitrusSpringSupport {
     public void validateResponseInvalidSwim(TestCaseRunner runner, String responseMessage) {         //валидация при НЕсуществующим ID
         runner.$(
                 http()
-                        .client("http://localhost:2222")
+                        .client(URL)
                         .receive()
                         .response(HttpStatus.NOT_FOUND)
                         .message()

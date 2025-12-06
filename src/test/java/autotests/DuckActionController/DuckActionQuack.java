@@ -16,22 +16,15 @@ import static com.consol.citrus.validation.DelegatingPayloadVariableExtractor.Bu
 
 public class DuckActionQuack extends TestNGCitrusSpringSupport {
 
+    private static final String URL = "http://localhost:2222";
+
     @Test(description = "Проверка кряканья утки с корректным нечетным ID и корректным звуком")
     @CitrusTest
     public void quackWithOddId(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 8.03, "rubber", "quack-quack", "ACTIVE");
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response()
-                        .message()
-                        .extract(fromBody().expression("$.id", "duckId"))
-        );
-
+        extractId(runner);
         duckQuack(runner, "${duckId}", "1", "2");
-        validateResponseQuack(runner, "{\n \"sound\": \"quack\"\n}");
-        // Проверяем, что ID нечетный
+        validateResponseQuack(runner, "{\n \"sound\": \"quack-quack, quack-quack\"\n}");
         validateOddId(runner);
     }
 
@@ -39,24 +32,16 @@ public class DuckActionQuack extends TestNGCitrusSpringSupport {
     @CitrusTest
     public void quackWithEvenId(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 8.03, "wood", "quack-quack", "ACTIVE");
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response()
-                        .message()
-                        .extract(fromBody().expression("$.id", "duckId"))
-        );
+        extractId(runner);
         duckQuack(runner, "${duckId}", "1", "1");
         validateResponseQuack(runner, "{\n \"sound\": \"quack-quack\"\n}");
-        // Проверяем, что ID четный
         validateEvenId(runner);
     }
 
     public void createDuck(TestCaseRunner runner, String color, double height, String material, String sound, String wingsState) {
         runner.$(
                 http()
-                        .client("http://localhost:2222")
+                        .client(URL)
                         .send()
                         .post("/api/duck/create")
                         .message()
@@ -70,10 +55,22 @@ public class DuckActionQuack extends TestNGCitrusSpringSupport {
         );
     }
 
+    public void extractId(TestCaseRunner runner) {
+        runner.$(
+                http()
+                        .client(URL)
+                        .receive()
+                        .response()
+                        .message()
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .extract(fromBody().expression("$.id", "duckId"))
+        );
+    }
+
     public void duckQuack(TestCaseRunner runner, String id, String repetitionCount, String soundCount) {
         runner.$(
                 http()
-                        .client("http://localhost:2222")
+                        .client(URL)
                         .send()
                         .get("/api/duck/action/quack")
                         .queryParam("id", id)
@@ -85,7 +82,7 @@ public class DuckActionQuack extends TestNGCitrusSpringSupport {
     public void validateResponseQuack(TestCaseRunner runner, String responseMessage) {
         runner.$(
                 http()
-                        .client("http://localhost:2222")
+                        .client(URL)
                         .receive()
                         .response(HttpStatus.OK)
                         .message()
@@ -94,7 +91,7 @@ public class DuckActionQuack extends TestNGCitrusSpringSupport {
         );
     }
 
-    // Дополнительные методы для проверки четности нечетности ID
+
     public void validateOddId(@Optional @CitrusResource TestCaseRunner runner) {
         runner.$(new AbstractTestAction() {
             @Override
@@ -102,7 +99,6 @@ public class DuckActionQuack extends TestNGCitrusSpringSupport {
                 String duckId = context.getVariable("duckId");
                 int id = Integer.parseInt(duckId);
 
-                // Проверяем, что ID нечетный
                 if (id % 2 == 0) {
                     throw new RuntimeException("ID должен быть нечетным " + id);
                 }
@@ -118,7 +114,6 @@ public class DuckActionQuack extends TestNGCitrusSpringSupport {
                 String duckId = context.getVariable("duckId");
                 int id = Integer.parseInt(duckId);
 
-                // Проверяем, что ID четный
                 if (id % 2 != 0) {
                     throw new RuntimeException("ID должен быть четным" + id);
                 }

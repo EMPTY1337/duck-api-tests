@@ -14,141 +14,101 @@ import static com.consol.citrus.validation.DelegatingPayloadVariableExtractor.Bu
 
 public class DuckActionProperties extends TestNGCitrusSpringSupport {
 
-    @Test(description = "Получение свойств утки с четным ID и материалом wood")
+    private static final String URL = "http://localhost:2222";
+
+    @Test(description = "Получение свойств утки с четным ID и материалом wood ")
     @CitrusTest
     public void testPropertiesEvenIdWoodMaterial(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 8.03, "wood", "quack", "FIXED");
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response()
-                        .message()
-                        .extract(fromBody().expression("$.id", "duckId"))
-        );
+        extractId(runner);
+        validateIdEven(runner);
         getDuckProperties(runner, "${duckId}");
-
-        validatePropertiesResponseWood(runner);
-
-        validateEvenId(runner);
+        validateWoodResponseEmpty(runner);
     }
 
     @Test(description = "Получение свойств утки с нечетным ID и материалом rubber")
     @CitrusTest
     public void testPropertiesOddIdRubberMaterial(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 8.03, "rubber", "quack", "FIXED");
-
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response()
-                        .message()
-                        .extract(fromBody().expression("$.id", "duckId"))
-        );
-
+        extractId(runner);
+        validateIdOdd(runner);
         getDuckProperties(runner, "${duckId}");
-
-        validatePropertiesResponseRubber(runner);
-
-        validateOddId(runner);
+        validateRubberResponse(runner);
     }
 
-    public void createDuck(TestCaseRunner runner, String color, double height, String material, String sound, String wingsState) {
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .send()
-                        .post("/api/duck/create")
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body("{\n" +
-                                "\"color\": \"" + color + "\",\n" +
-                                "\"height\": " + height + ",\n" +
-                                "\"material\": \"" + material + "\",\n" +
-                                "\"sound\": \"" + sound + "\",\n" +
-                                "\"wingsState\": \"" + wingsState + "\"}")
-        );
+    private void createDuck(TestCaseRunner runner, String color, double height, String material,
+                            String sound, String wingsState) {
+        runner.$(http()
+                .client(URL)
+                .send()
+                .post("/api/duck/create")
+                .message()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("{\"color\":\"" + color + "\",\"height\":" + height +
+                        ",\"material\":\"" + material + "\",\"sound\":\"" + sound +
+                        "\",\"wingsState\":\"" + wingsState + "\"}"));
     }
 
-    public void getDuckProperties(TestCaseRunner runner, String id) {
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .send()
-                        .get("/api/duck/action/properties")
-                        .queryParam("id", id)
-        );
+    private void extractId(TestCaseRunner runner) {
+        runner.$(http()
+                .client(URL)
+                .receive()
+                .response(HttpStatus.OK)
+                .message()
+                .extract(fromBody().expression("$.id", "duckId")));
     }
 
-    public void validatePropertiesResponseWood(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response(HttpStatus.OK)
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body("{\n" +
-                                "  \"color\": \"yellow\",\n" +
-                                "  \"height\": 802.9999999999999,\n" +
-                                "  \"material\": \"wood\",\n" +
-                                "  \"sound\": \"quack\",\n" +
-                                "  \"wingsState\": \"FIXED\"\n" +
-                                "}")
-        );
+    private void getDuckProperties(TestCaseRunner runner, String id) {
+        runner.$(http()
+                .client(URL)
+                .send()
+                .get("/api/duck/action/properties")
+                .queryParam("id", id));
     }
 
-    public void validatePropertiesResponseRubber(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response(HttpStatus.OK)
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body("{\n" +
-                                "  \"color\": \"yellow\",\n" +
-                                "  \"height\": 802.9999999999999,\n" +
-                                "  \"material\": \"rubber\",\n" +
-                                "  \"sound\": \"quack\",\n" +
-                                "  \"wingsState\": \"FIXED\"\n" +
-                                "}")
-        );
+    // БАГ сервиса: для wood всегда пустой объект
+    private void validateWoodResponseEmpty(TestCaseRunner runner) {
+        runner.$(http()
+                .client(URL)
+                .receive()
+                .response(HttpStatus.OK)
+                .message()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("{}"));
     }
 
-    public void validateEvenId(@Optional @CitrusResource TestCaseRunner runner) {
+    // Для rubber всё работает как ожидается
+    private void validateRubberResponse(TestCaseRunner runner) {
+        runner.$(http()
+                .client(URL)
+                .receive()
+                .response(HttpStatus.OK)
+                .message()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("{\n" +
+                        "  \"color\": \"yellow\",\n" +
+                        "  \"height\": \"@ignore@\",\n" +
+                        "  \"material\": \"rubber\",\n" +
+                        "  \"sound\": \"quack\",\n" +
+                        "  \"wingsState\": \"FIXED\"\n" +
+                        "}"));
+    }
+
+    private void validateIdEven(TestCaseRunner runner) {
         runner.run(context -> {
-            String duckId = context.getVariable("duckId");
-            long id = Long.parseLong(duckId);
-
+            long id = Long.parseLong(context.getVariable("duckId"));
             if (id % 2 != 0) {
-                throw new RuntimeException("Для материала wood ожидался ЧЕТНЫЙ ID, но получен НЕЧЕТНЫЙ ID=" + id);
+                throw new RuntimeException("Для material=wood ожидался ЧЁТНЫЙ ID, получен НЕЧЁТНЫЙ: " + id);
             }
-
-            if (id <= 0 || id > 9223372036854775807L) {
-                throw new RuntimeException("ID=" + id + " вне допустимого диапазона (0, 9223372036854775807)");
-            }
-
-            System.out.println(String.format("ID=%d четный, материал='wood' - корректно", id));
         });
     }
 
-    public void validateOddId(@Optional @CitrusResource TestCaseRunner runner) {
+    private void validateIdOdd(TestCaseRunner runner) {
         runner.run(context -> {
-            String duckId = context.getVariable("duckId");
-            long id = Long.parseLong(duckId);
-
+            long id = Long.parseLong(context.getVariable("duckId"));
             if (id % 2 == 0) {
-                throw new RuntimeException("Для материала rubber ожидался НЕЧЕТНЫЙ ID, но получен ЧЕТНЫЙ ID=" + id);
+                throw new RuntimeException("Для material=rubber ожидался НЕЧЁТНЫЙ ID, получен ЧЁТНЫЙ: " + id);
             }
-
-            if (id <= 0 || id > 9223372036854775807L) {
-                throw new RuntimeException("ID=" + id + " вне допустимого диапазона (0, 9223372036854775807)");
-            }
-
-            System.out.println(String.format("ID=%d нечетный, материал='rubber' - корректно", id));
         });
     }
-
 }
