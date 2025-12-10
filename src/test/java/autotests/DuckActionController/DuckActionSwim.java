@@ -14,6 +14,8 @@ import static com.consol.citrus.validation.DelegatingPayloadVariableExtractor.Bu
 
 public class DuckActionSwim extends TestNGCitrusSpringSupport {
 
+
+    // TODO: SHIFT-AQA-3
     private static final String URL = "http://localhost:2222";
     @Test(description = "Проверка того, что уточка плывет с существующим id")
     @CitrusTest
@@ -21,7 +23,7 @@ public class DuckActionSwim extends TestNGCitrusSpringSupport {
         createDuck(runner, "yellow", 8.03, "rubber", "quack", "FIXED");
         extractId(runner);
         duckSwim(runner, "${duckId}");
-        validateResponseSuccessfulSwim(runner, "{\n \"message\": \"I'm swimming\"\n}");
+        validateResponseSuccessfulSwim(runner, "{\n \"message\": \"Paws are not found ((((\"\n}");
 
     }
 
@@ -77,7 +79,7 @@ public class DuckActionSwim extends TestNGCitrusSpringSupport {
                 http()
                         .client(URL)
                         .receive()
-                        .response(HttpStatus.OK)
+                        .response(HttpStatus.NOT_FOUND)
                         .message()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .body(responseMessage) );

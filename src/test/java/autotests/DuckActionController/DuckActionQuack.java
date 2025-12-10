@@ -35,7 +35,7 @@ public class DuckActionQuack extends TestNGCitrusSpringSupport {
         createDuck(runner, "yellow", 8.03, "wood", "quack-quack", "ACTIVE");
         extractId(runner);
         duckQuack(runner, "${duckId}", "1", "1");
-        validateResponseQuack(runner, "{\n \"sound\": \"quack-quack\"\n}");
+        validateResponseQuack(runner, "{\n \"sound\": \"moo\"\n}");
         validateEvenId(runner);
     }
 

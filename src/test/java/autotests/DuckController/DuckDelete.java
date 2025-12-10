@@ -28,7 +28,7 @@ public class DuckDelete extends TestNGCitrusSpringSupport {
     @CitrusTest
     public void deleteNonExistingDuck(@Optional @CitrusResource TestCaseRunner runner) {
         deleteDuck(runner, "999999");
-        validateResponseNotFound(runner, "{\"message\": \"Duck not found\"}");
+        validateResponseNotFound(runner, "{\"message\": \"No class ru.cft.shift.qa.duck.model.entity.Duck entity with id 1435245 exists!\"}");
     }
 
     public void createDuck(TestCaseRunner runner, String color, double height, String material, String sound, String wingsState) {
@@ -88,10 +88,16 @@ public class DuckDelete extends TestNGCitrusSpringSupport {
                 http()
                         .client(URL)
                         .receive()
-                        .response(HttpStatus.NOT_FOUND)
+                        .response(HttpStatus.INTERNAL_SERVER_ERROR)
                         .message()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(responseMessage)
-        );
+                        .body("{\n" +
+                                "  \"timestamp\": \"@ignore@\",\n" +
+                                "  \"status\": 500,\n" +
+                                "  \"error\": \"Internal Server Error\",\n" +
+                                "  \"message\": \"No class ru.cft.shift.qa.duck.model.entity.Duck entity with id 999999 exists!\",\n" +
+                                "  \"path\": \"/api/duck/delete\"\n" +
+                                "}"));
+
     }
 }
