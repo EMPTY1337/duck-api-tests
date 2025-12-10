@@ -1,93 +1,44 @@
 package autotests.DuckController;
 
+import autotests.clients.DuckActionsClient;
+import autotests.payload.DuckPropertiesResponse;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
 import com.consol.citrus.annotations.CitrusTest;
-import com.consol.citrus.testng.spring.TestNGCitrusSpringSupport;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
-import static com.consol.citrus.http.actions.HttpActionBuilder.http;
-import static com.consol.citrus.validation.DelegatingPayloadVariableExtractor.Builder.fromBody;
-
-public class DuckUpdate extends TestNGCitrusSpringSupport {
-    private static final String URL = "http://localhost:2222";
+public class DuckUpdate extends DuckActionsClient {
 
     @Test(description = "Изменить цвет и высоту уточки")
     @CitrusTest
     public void updateColorAndHeight(@Optional @CitrusResource TestCaseRunner runner) {
-        createDuck(runner, "yellow", 6, "rubber", "quack", "ACTIVE");
-        extractId(runner);
+        DuckPropertiesResponse duck = new DuckPropertiesResponse()
+                .setColor("yellow")
+                .setHeight(6)
+                .setMaterial("rubber")
+                .setSound("quack")
+                .setWingsState("ACTIVE");
+
+        createDuckAndExtractId(runner, duck);
+
         updateDuck(runner, "${duckId}", "red", 15.5, "rubber", "quack", "ACTIVE");
-        validateResponseUpdate(runner);
+        validateUpdateResponse(runner, "${duckId}");
     }
 
     @Test(description = "Изменить цвет и звук уточки")
     @CitrusTest
     public void updateColorAndSound(@Optional @CitrusResource TestCaseRunner runner) {
-        createDuck(runner, "red", 7, "rubber", "quack", "ACTIVE");
-        extractId(runner);
+        DuckPropertiesResponse duck = new DuckPropertiesResponse()
+                .setColor("red")
+                .setHeight(7)
+                .setMaterial("rubber")
+                .setSound("quack")
+                .setWingsState("ACTIVE");
+
+        createDuckAndExtractId(runner, duck);
+
         updateDuck(runner, "${duckId}", "yellow", 0.03, "rubber", "quack-quack-quack", "ACTIVE");
-        validateResponseUpdate(runner);
-    }
-
-    public void createDuck(TestCaseRunner runner, String color, double height, String material,
-                           String sound, String wingsState) {
-        runner.$(
-                http()
-                        .client(URL)
-                        .send()
-                        .post("/api/duck/create")
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body("{\n" +
-                                "\"color\": \"" + color + "\",\n" +
-                                "\"height\": " + height + ",\n" +
-                                "\"material\": \"" + material + "\",\n" +
-                                "\"sound\": \"" + sound + "\",\n" +
-                                "\"wingsState\": \"" + wingsState + "\"}")
-        );
-    }
-
-    public void extractId(TestCaseRunner runner) {
-        runner.$(
-                http()
-                        .client(URL)
-                        .receive()
-                        .response()
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .extract(fromBody().expression("$.id", "duckId"))
-        );
-    }
-
-    public void updateDuck(TestCaseRunner runner, String id, String color, double height,
-                           String material, String sound, String wingsState) {
-        runner.$(
-                http()
-                        .client(URL)
-                        .send()
-                        .put("/api/duck/update")
-                        .queryParam("id", id)
-                        .queryParam("color", color)
-                        .queryParam("height", String.valueOf(height))
-                        .queryParam("material", material)
-                        .queryParam("sound", sound)
-                        .queryParam("wingsState", wingsState)
-        );
-    }
-
-    public void validateResponseUpdate(TestCaseRunner runner) {
-        runner.$(
-                http()
-                        .client(URL)
-                        .receive()
-                        .response(HttpStatus.OK)
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body("{\n \"message\": \"Duck with id = ${duckId} is updated\"\n}")
-        );
+        validateUpdateResponse(runner, "${duckId}");
     }
 }

@@ -1,59 +1,37 @@
 package autotests.DuckController;
 
+import autotests.clients.DuckActionsClient;
+import autotests.payload.DuckPropertiesResponse;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
 import com.consol.citrus.annotations.CitrusTest;
-import com.consol.citrus.testng.spring.TestNGCitrusSpringSupport;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
-import static com.consol.citrus.http.actions.HttpActionBuilder.http;
-
-public class DuckCreate extends TestNGCitrusSpringSupport {
-
-    private static final String URL = "http://localhost:2222";
+public class DuckCreate extends DuckActionsClient {
 
     @Test(description = "Создать утку с material = rubber")
     @CitrusTest
     public void createRubberDuck(@Optional @CitrusResource TestCaseRunner runner) {
-        createDuck(runner, "yellow", 8.03, "rubber", "quack-quack", "ACTIVE");
-        validateCreateResponse(runner, "rubber", "yellow", "quack-quack");
-    }
+        DuckPropertiesResponse duck = new DuckPropertiesResponse()
+                .setColor("yellow")
+                .setHeight(8.03)
+                .setMaterial("rubber")
+                .setSound("quack-quack")
+                .setWingsState("ACTIVE");
 
+        createDuckAndExtractId(runner, duck);
+    }
     @Test(description = "Создать утку с material = wood")
     @CitrusTest
     public void createWoodDuck(@Optional @CitrusResource TestCaseRunner runner) {
-        createDuck(runner, "brown", 10.5, "wood", "quack", "ACTIVE");
-        validateCreateResponse(runner, "wood", "brown", "quack");
-    }
+        DuckPropertiesResponse duck = new DuckPropertiesResponse()
+                .setColor("brown")
+                .setHeight(10.5)
+                .setMaterial("wood")
+                .setSound("quack")
+                .setWingsState("ACTIVE");
 
-    private void createDuck(TestCaseRunner runner, String color, double height, String material,
-                            String sound, String wingsState) {
-        runner.$(http()
-                .client(URL)
-                .send()
-                .post("/api/duck/create")
-                .message()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body("{\"color\":\"" + color + "\",\"height\":" + height + ",\"material\":\"" + material + "\",\"sound\":\"" + sound + "\",\"wingsState\":\"" + wingsState + "\"}"));
-    }
-
-    private void validateCreateResponse(TestCaseRunner runner, String material, String color, String sound) {
-        runner.$(http()
-                .client(URL)
-                .receive()
-                .response(HttpStatus.OK)
-                .message()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body("{\n" +
-                        "  \"id\": \"@ignore@\",\n" +
-                        "  \"color\": \"" + color + "\",\n" +
-                        "  \"height\": \"@ignore@\",\n" +
-                        "  \"material\": \"" + material + "\",\n" +
-                        "  \"sound\": \"" + sound + "\",\n" +
-                        "  \"wingsState\": \"ACTIVE\"\n" +
-                        "}"));
+        createDuckAndExtractId(runner, duck);
     }
 }
