@@ -24,7 +24,7 @@ public class DuckActionQuack extends DuckActionsClient {
         validateIdOdd(runner);
 
         duckQuack(runner, "${duckId}", "1", "2");
-        validateResponseWithMessage(runner, "{\n \"sound\": \"quack-quack, quack-quack\"\n}");
+        validateWithString(runner, "{\n \"sound\": \"quack-quack, quack-quack\"\n}");
     }
 
     // TODO: SHIFT-AQA-2
@@ -42,6 +42,6 @@ public class DuckActionQuack extends DuckActionsClient {
         validateIdEven(runner);
 
         duckQuack(runner, "${duckId}", "1", "1");
-        validateResponseWithMessage(runner, "{\n \"sound\": \"moo\"\n}");
+        validateWithResource(runner, "duck_quack_response.json");
     }
 }

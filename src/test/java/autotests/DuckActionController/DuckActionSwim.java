@@ -23,7 +23,7 @@ public class DuckActionSwim extends DuckActionsClient {
 
         createDuckAndExtractId(runner, duck);
         duckSwim(runner, "${duckId}");
-        validateResponseWithMessageButNotFound(runner, "{\n \"message\": \"Paws are not found ((((\"\n}");
+        validateWithString(runner, "{\n \"message\": \"Paws are not found ((((\"\n}");
     }
 
     @Test(description = "Проверка того, что уточка плывет с НЕсуществующим id")
@@ -38,6 +38,6 @@ public class DuckActionSwim extends DuckActionsClient {
 
         createDuckAndExtractId(runner, duck);
         duckSwim(runner, "54");
-        validateResponseWithMessageButNotFound(runner, "{\n \"message\": \"Paws are not found ((((\"\n}");
+        validateWithResource(runner, "duck_swim_response.json");
     }
 }

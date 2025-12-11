@@ -1,6 +1,7 @@
 package autotests.DuckActionController;
 
 import autotests.clients.DuckActionsClient;
+import autotests.payload.DuckActionResponse;
 import autotests.payload.DuckPropertiesResponse;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
@@ -22,7 +23,7 @@ public class DuckActionFly extends DuckActionsClient {
 
         createDuckAndExtractId(runner, duck);
         duckFly(runner, "${duckId}");
-        validateResponseWithMessage(runner, "{\n \"message\": \"I am flying :)\"\n}");
+        validateWithString(runner, "{\n \"message\": \"I am flying :)\"\n}");
     }
 
     @Test(description = "Проверка полета утки с Fixed крыльями")
@@ -37,7 +38,7 @@ public class DuckActionFly extends DuckActionsClient {
 
         createDuckAndExtractId(runner, duck);
         duckFly(runner, "${duckId}");
-        validateResponseWithMessage(runner, "{\n \"message\": \"I can not fly :C\"\n}");
+        validateWithResource(runner, "duck_fly_fixed.json");
     }
 
     @Test(description = "Проверка полета утки с Undefined крыльями")
@@ -52,6 +53,8 @@ public class DuckActionFly extends DuckActionsClient {
 
         createDuckAndExtractId(runner, duck);
         duckFly(runner, "${duckId}");
-        validateResponseWithMessage(runner, "{\n \"message\": \"Wings are not detected :(\"\n}");
+        DuckActionResponse expectedResponse = new DuckActionResponse()
+                .setMessage("Wings are not detected :(");
+        validateWithPayload(runner, expectedResponse);
     }
 }

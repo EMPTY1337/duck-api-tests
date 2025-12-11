@@ -8,10 +8,11 @@ import com.consol.citrus.message.MessageType;
 import com.consol.citrus.message.builder.ObjectMappingPayloadBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.testng.annotations.Optional;
-import com.consol.citrus.validation.DelegatingPayloadVariableExtractor;
+
 
 
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
@@ -57,7 +58,6 @@ public class DuckActionsClient extends BaseTest {
                 .queryParam("id", id));
     }
 
-    //ДЕЙСТВИЯ УТКИ
     public void duckSwim(@Optional @CitrusResource TestCaseRunner runner,
                          String id) {
         runner.$(http()
@@ -89,7 +89,6 @@ public class DuckActionsClient extends BaseTest {
                 .queryParam("soundCount", soundCount));
     }
 
-    //ОБНОВЛЕНИЕ УТКИ
     public void updateDuck(@Optional @CitrusResource TestCaseRunner runner,
                                         String id,
                                         String color,
@@ -109,8 +108,6 @@ public class DuckActionsClient extends BaseTest {
                 .queryParam("wingsState", wingsState));
     }
 
-    //УДАЛЕНИЕ УТКИ
-
     public void deleteDuck(@Optional @CitrusResource TestCaseRunner runner,
                            String id) {
         runner.$(http()
@@ -118,6 +115,41 @@ public class DuckActionsClient extends BaseTest {
                 .send()
                 .delete("/api/duck/delete")
                 .queryParam("id", id));
+    }
+    // 1. ВАЛИДАЦИЯ С STRING ОТВЕТОМ
+    public void validateWithString(@Optional @CitrusResource TestCaseRunner runner,
+                                   String responseString) {
+        runner.$(http()
+                .client(duckService)
+                .receive()
+                .response(HttpStatus.OK)
+                .message()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(responseString));
+    }
+
+    // 2. ВАЛИДАЦИЯ ИЗ РЕСУРСОВ
+    public void validateWithResource(@Optional @CitrusResource TestCaseRunner runner,
+                                     String fileName) {
+        runner.$(http()
+                .client(duckService)
+                .receive()
+                .response(HttpStatus.OK)
+                .message()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new ClassPathResource(fileName)));
+    }
+
+    // 3. ВАЛИДАЦИЯ С PAYLOAD
+    public void validateWithPayload(@Optional @CitrusResource TestCaseRunner runner,
+                                    Object expectedPayload) {
+        runner.$(http()
+                .client(duckService)
+                .receive()
+                .response(HttpStatus.OK)
+                .message()
+                .type(MessageType.JSON)
+                .body(new ObjectMappingPayloadBuilder(expectedPayload, objectMapper)));
     }
 
 
