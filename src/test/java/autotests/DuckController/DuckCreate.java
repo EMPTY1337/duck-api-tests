@@ -5,9 +5,15 @@ import autotests.payload.DuckPropertiesResponse;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
 import com.consol.citrus.annotations.CitrusTest;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
+import static com.consol.citrus.container.FinallySequence.Builder.doFinally;
+
+@Epic("Duck Controller")
+@Feature("Create")
 public class DuckCreate extends DuckActionsClient {
 
     @Test(description = "Создать утку с material = rubber")
@@ -20,8 +26,12 @@ public class DuckCreate extends DuckActionsClient {
                 .setSound("quack-quack")
                 .setWingsState("ACTIVE");
 
+        runner.variable("duckId", "2222356333");
         createDuckAndExtractId(runner, duck);
+        validateDuckInDb(runner, "${duckId}", duck);
+        deleteDuckByDB(runner, "${duckId}");
     }
+
     @Test(description = "Создать утку с material = wood")
     @CitrusTest
     public void createWoodDuck(@Optional @CitrusResource TestCaseRunner runner) {
@@ -32,6 +42,9 @@ public class DuckCreate extends DuckActionsClient {
                 .setSound("quack")
                 .setWingsState("ACTIVE");
 
+        runner.variable("duckId", "222222333");
         createDuckAndExtractId(runner, duck);
+        validateDuckInDb(runner, "${duckId}", duck);
+        deleteDuckByDB(runner, "${duckId}");
     }
 }

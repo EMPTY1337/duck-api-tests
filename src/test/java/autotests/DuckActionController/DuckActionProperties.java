@@ -5,9 +5,15 @@ import autotests.payload.DuckPropertiesResponse;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
 import com.consol.citrus.annotations.CitrusTest;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
+import static com.consol.citrus.container.FinallySequence.Builder.doFinally;
+
+@Epic("Duck Action Controller")
+@Feature("Properties")
 public class DuckActionProperties extends DuckActionsClient {
 
     // TODO: SHIFT-AQA-1
@@ -21,11 +27,11 @@ public class DuckActionProperties extends DuckActionsClient {
                 .setSound("quack")
                 .setWingsState("FIXED");
 
-        createDuckAndExtractId(runner, duck);
-        validateIdEven(runner);
-
+        runner.variable("duckId", "2");
+        createDuckByDB(runner, duck);
         getDuckActionProperties(runner, "${duckId}");
         validateWoodResponseEmpty(runner);
+        deleteDuckByDB(runner, "${duckId}");
     }
 
     @Test(description = "Получение свойств утки с нечетным ID и материалом rubber")
@@ -38,10 +44,10 @@ public class DuckActionProperties extends DuckActionsClient {
                 .setSound("quack")
                 .setWingsState("FIXED");
 
-        createDuckAndExtractId(runner, duck);
-        validateIdOdd(runner);
-
+        runner.variable("duckId", "3");
+        createDuckByDB(runner, duck);
         getDuckActionProperties(runner, "${duckId}");
         validateRubberResponse(runner, "yellow", "rubber", "quack", "FIXED");
+        deleteDuckByDB(runner, "${duckId}");
     }
 }

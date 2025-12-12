@@ -6,9 +6,15 @@ import autotests.payload.DuckPropertiesResponse;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
 import com.consol.citrus.annotations.CitrusTest;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
+import static com.consol.citrus.container.FinallySequence.Builder.doFinally;
+
+@Epic("Duck Action Controller")
+@Feature("Fly")
 public class DuckActionFly extends DuckActionsClient {
 
     @Test(description = "Проверка полета утки с Active крыльями")
@@ -21,9 +27,11 @@ public class DuckActionFly extends DuckActionsClient {
                 .setSound("quack")
                 .setWingsState("ACTIVE");
 
-        createDuckAndExtractId(runner, duck);
+        runner.variable("duckId", "9911919");
+        createDuckByDB(runner, duck);
         duckFly(runner, "${duckId}");
         validateWithString(runner, "{\n \"message\": \"I am flying :)\"\n}");
+        deleteDuckByDB(runner, "${duckId}");
     }
 
     @Test(description = "Проверка полета утки с Fixed крыльями")
@@ -36,9 +44,11 @@ public class DuckActionFly extends DuckActionsClient {
                 .setSound("quack")
                 .setWingsState("FIXED");
 
-        createDuckAndExtractId(runner, duck);
+        runner.variable("duckId", "1243");
+        createDuckByDB(runner, duck);
         duckFly(runner, "${duckId}");
         validateWithResource(runner, "duck_fly_fixed.json");
+        deleteDuckByDB(runner, "${duckId}");
     }
 
     @Test(description = "Проверка полета утки с Undefined крыльями")
@@ -51,10 +61,12 @@ public class DuckActionFly extends DuckActionsClient {
                 .setSound("quack")
                 .setWingsState("UNDEFINED");
 
-        createDuckAndExtractId(runner, duck);
+        runner.variable("duckId", "167");
+        createDuckByDB(runner, duck);
         duckFly(runner, "${duckId}");
         DuckActionResponse expectedResponse = new DuckActionResponse()
                 .setMessage("Wings are not detected :(");
         validateWithPayload(runner, expectedResponse);
+        deleteDuckByDB(runner, "${duckId}");
     }
 }

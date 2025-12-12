@@ -5,9 +5,13 @@ import autotests.payload.DuckPropertiesResponse;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
 import com.consol.citrus.annotations.CitrusTest;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
+@Epic("Duck Controller")
+@Feature("Delete")
 public class DuckDelete extends DuckActionsClient {
 
     @Test(description = "Успешное удаление уточки")
@@ -20,15 +24,17 @@ public class DuckDelete extends DuckActionsClient {
                 .setSound("quack")
                 .setWingsState("ACTIVE");
 
-        createDuckAndExtractId(runner, duck);
-
+        runner.variable("duckId", "223556");
+        createDuckByDB(runner, duck);
         deleteDuck(runner, "${duckId}");
         validateResponseStatusOk(runner);
+        validateDuckNotInDb(runner, "${duckId}");
     }
 
     @Test(description = "Удаление уточки с несуществующим ID")
     @CitrusTest
     public void deleteNonExistingDuck(@Optional @CitrusResource TestCaseRunner runner) {
+        runner.variable("duckId", "8888811");
         deleteDuck(runner, "999999");
         validateResponseStatusNotFound(runner);
     }
