@@ -8,7 +8,7 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
 @ContextConfiguration(classes = {EndpointConfig.class})
-public abstract class BaseTest extends TestNGCitrusSpringSupport {
+public class  BaseTest extends TestNGCitrusSpringSupport {
 
     @CitrusTest
     @Test

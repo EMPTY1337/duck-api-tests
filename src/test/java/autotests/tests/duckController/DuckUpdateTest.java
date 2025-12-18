@@ -1,4 +1,4 @@
-package autotests.DuckController;
+package autotests.tests.duckController;
 
 import autotests.clients.DuckActionsClient;
 import autotests.payload.DuckActionResponse;
@@ -9,7 +9,7 @@ import com.consol.citrus.annotations.CitrusTest;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
-public class DuckUpdate extends DuckActionsClient {
+public class DuckUpdateTest extends DuckActionsClient {
 
     @Test(description = "Изменить цвет и высоту уточки")
     @CitrusTest

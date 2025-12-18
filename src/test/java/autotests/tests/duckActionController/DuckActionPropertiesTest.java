@@ -1,4 +1,4 @@
-package autotests.DuckActionController;
+package autotests.tests.duckActionController;
 
 import autotests.clients.DuckActionsClient;
 import autotests.payload.DuckPropertiesResponse;
@@ -8,7 +8,7 @@ import com.consol.citrus.annotations.CitrusTest;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
-public class DuckActionProperties extends DuckActionsClient {
+public class DuckActionPropertiesTest extends DuckActionsClient {
 
     // TODO: SHIFT-AQA-1
     @Test(description = "Получение свойств утки с четным ID и материалом wood")

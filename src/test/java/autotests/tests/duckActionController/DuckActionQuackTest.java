@@ -1,4 +1,4 @@
-package autotests.DuckActionController;
+package autotests.tests.duckActionController;
 
 import autotests.clients.DuckActionsClient;
 import autotests.payload.DuckPropertiesResponse;
@@ -8,7 +8,7 @@ import com.consol.citrus.annotations.CitrusTest;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
-public class DuckActionQuack extends DuckActionsClient {
+public class DuckActionQuackTest extends DuckActionsClient {
 
     @Test(description = "Проверка кряканья утки с корректным нечетным ID и корректным звуком")
     @CitrusTest

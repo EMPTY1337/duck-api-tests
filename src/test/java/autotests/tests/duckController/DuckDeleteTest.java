@@ -1,4 +1,4 @@
-package autotests.DuckController;
+package autotests.tests.duckController;
 
 import autotests.clients.DuckActionsClient;
 import autotests.payload.DuckPropertiesResponse;
@@ -8,7 +8,7 @@ import com.consol.citrus.annotations.CitrusTest;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
-public class DuckDelete extends DuckActionsClient {
+public class DuckDeleteTest extends DuckActionsClient {
 
     @Test(description = "Успешное удаление уточки")
     @CitrusTest

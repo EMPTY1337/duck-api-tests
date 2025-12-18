@@ -1,4 +1,4 @@
-package autotests.DuckActionController;
+package autotests.tests.duckActionController;
 
 import autotests.clients.DuckActionsClient;
 import autotests.payload.DuckActionResponse;
@@ -9,7 +9,7 @@ import com.consol.citrus.annotations.CitrusTest;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
-public class DuckActionFly extends DuckActionsClient {
+public class DuckActionFlyTest extends DuckActionsClient {
 
     @Test(description = "Проверка полета утки с Active крыльями")
     @CitrusTest
