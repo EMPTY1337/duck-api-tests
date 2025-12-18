@@ -1,4 +1,4 @@
-package autotests.DuckController;
+package autotests.duckController;
 
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 import static com.consol.citrus.validation.DelegatingPayloadVariableExtractor.Builder.fromBody;
 
-public class DuckDelete extends TestNGCitrusSpringSupport {
+public class DuckDeleteTest extends TestNGCitrusSpringSupport {
     private static final String URL = "http://localhost:2222";
 
     @Test(description = "Успешное удаление уточки")
@@ -28,7 +28,13 @@ public class DuckDelete extends TestNGCitrusSpringSupport {
     @CitrusTest
     public void deleteNonExistingDuck(@Optional @CitrusResource TestCaseRunner runner) {
         deleteDuck(runner, "999999");
-        validateResponseNotFound(runner, "{\"message\": \"No class ru.cft.shift.qa.duck.model.entity.Duck entity with id 1435245 exists!\"}");
+        validateResponseNotFound(runner, "{\n" +
+                "  \"timestamp\": \"@ignore@\",\n" +
+                "  \"status\": 500,\n" +
+                "  \"error\": \"Internal Server Error\",\n" +
+                "  \"message\": \"No class ru.cft.shift.qa.duck.model.entity.Duck entity with id 999999 exists!\",\n" +
+                "  \"path\": \"/api/duck/delete\"\n" +
+                "}");
     }
 
     public void createDuck(TestCaseRunner runner, String color, double height, String material, String sound, String wingsState) {
@@ -91,13 +97,8 @@ public class DuckDelete extends TestNGCitrusSpringSupport {
                         .response(HttpStatus.INTERNAL_SERVER_ERROR)
                         .message()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body("{\n" +
-                                "  \"timestamp\": \"@ignore@\",\n" +
-                                "  \"status\": 500,\n" +
-                                "  \"error\": \"Internal Server Error\",\n" +
-                                "  \"message\": \"No class ru.cft.shift.qa.duck.model.entity.Duck entity with id 999999 exists!\",\n" +
-                                "  \"path\": \"/api/duck/delete\"\n" +
-                                "}"));
+                        .body(responseMessage)
+        );
 
     }
 }

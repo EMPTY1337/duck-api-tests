@@ -1,4 +1,4 @@
-package autotests.DuckController;
+package autotests.duckController;
 
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 import static com.consol.citrus.validation.DelegatingPayloadVariableExtractor.Builder.fromBody;
 
-public class DuckUpdate extends TestNGCitrusSpringSupport {
+public class DuckUpdateTest extends TestNGCitrusSpringSupport {
     private static final String URL = "http://localhost:2222";
 
     @Test(description = "Изменить цвет и высоту уточки")

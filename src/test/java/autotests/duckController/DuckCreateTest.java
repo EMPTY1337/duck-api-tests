@@ -1,4 +1,4 @@
-package autotests.DuckController;
+package autotests.duckController;
 
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
 
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 
-public class DuckCreate extends TestNGCitrusSpringSupport {
+public class DuckCreateTest extends TestNGCitrusSpringSupport {
 
     private static final String URL = "http://localhost:2222";
 
@@ -19,14 +19,14 @@ public class DuckCreate extends TestNGCitrusSpringSupport {
     @CitrusTest
     public void createRubberDuck(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 8.03, "rubber", "quack-quack", "ACTIVE");
-        validateCreateResponse(runner, "rubber", "yellow", "quack-quack");
+        validateCreateResponseRubber(runner, "rubber", "yellow", "quack-quack");
     }
 
     @Test(description = "Создать утку с material = wood")
     @CitrusTest
     public void createWoodDuck(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "brown", 10.5, "wood", "quack", "ACTIVE");
-        validateCreateResponse(runner, "wood", "brown", "quack");
+        validateCreateResponseWood(runner, "wood", "brown", "quack");
     }
 
     private void createDuck(TestCaseRunner runner, String color, double height, String material,
@@ -40,7 +40,7 @@ public class DuckCreate extends TestNGCitrusSpringSupport {
                 .body("{\"color\":\"" + color + "\",\"height\":" + height + ",\"material\":\"" + material + "\",\"sound\":\"" + sound + "\",\"wingsState\":\"" + wingsState + "\"}"));
     }
 
-    private void validateCreateResponse(TestCaseRunner runner, String material, String color, String sound) {
+    private void validateCreateResponseRubber(TestCaseRunner runner, String material, String color, String sound) {
         runner.$(http()
                 .client(URL)
                 .receive()
@@ -48,9 +48,26 @@ public class DuckCreate extends TestNGCitrusSpringSupport {
                 .message()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body("{\n" +
-                        "  \"id\": \"@ignore@\",\n" +
+                        "  \"id\": 9,\n" +
                         "  \"color\": \"" + color + "\",\n" +
-                        "  \"height\": \"@ignore@\",\n" +
+                        "  \"height\": 8.03,\n" +
+                        "  \"material\": \"" + material + "\",\n" +
+                        "  \"sound\": \"" + sound + "\",\n" +
+                        "  \"wingsState\": \"ACTIVE\"\n" +
+                        "}"));
+    }
+
+    private void validateCreateResponseWood(TestCaseRunner runner, String material, String color, String sound) {
+        runner.$(http()
+                .client(URL)
+                .receive()
+                .response(HttpStatus.OK)
+                .message()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body("{\n" +
+                        "  \"id\": 10,\n" +
+                        "  \"color\": \"" + color + "\",\n" +
+                        "  \"height\": 10.5,\n" +
                         "  \"material\": \"" + material + "\",\n" +
                         "  \"sound\": \"" + sound + "\",\n" +
                         "  \"wingsState\": \"ACTIVE\"\n" +

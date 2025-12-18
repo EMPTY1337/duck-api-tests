@@ -1,4 +1,4 @@
-package autotests.DuckActionController;
+package autotests.duckActionController;
 
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 import static com.consol.citrus.validation.DelegatingPayloadVariableExtractor.Builder.fromBody;
 
-public class DuckActionProperties extends TestNGCitrusSpringSupport {
+public class DuckActionPropertiesTest extends TestNGCitrusSpringSupport {
 
     private static final String URL = "http://localhost:2222";
 
@@ -88,7 +88,7 @@ public class DuckActionProperties extends TestNGCitrusSpringSupport {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body("{\n" +
                         "  \"color\": \"yellow\",\n" +
-                        "  \"height\": \"@ignore@\",\n" +
+                        "  \"height\": 802.9999999999999,\n" +
                         "  \"material\": \"rubber\",\n" +
                         "  \"sound\": \"quack\",\n" +
                         "  \"wingsState\": \"FIXED\"\n" +

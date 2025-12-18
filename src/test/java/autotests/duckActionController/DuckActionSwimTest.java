@@ -1,4 +1,4 @@
-package autotests.DuckActionController;
+package autotests.duckActionController;
 
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 import static com.consol.citrus.validation.DelegatingPayloadVariableExtractor.Builder.fromBody;
 
-public class DuckActionSwim extends TestNGCitrusSpringSupport {
+public class DuckActionSwimTest extends TestNGCitrusSpringSupport {
 
 
     // TODO: SHIFT-AQA-3
