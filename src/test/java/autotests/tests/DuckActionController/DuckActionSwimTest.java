@@ -1,4 +1,4 @@
-package autotests.DuckActionController;
+package autotests.tests.DuckActionController;
 
 import autotests.clients.DuckActionsClient;
 import autotests.payload.DuckPropertiesResponse;
@@ -10,11 +10,9 @@ import io.qameta.allure.Feature;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
-import static com.consol.citrus.container.FinallySequence.Builder.doFinally;
-
 @Epic("Duck Action Controller")
 @Feature("Swim")
-public class DuckActionSwim extends DuckActionsClient {
+public class DuckActionSwimTest extends DuckActionsClient {
 
     // TODO: SHIFT-AQA-3
     @Test(description = "Проверка того, что уточка плывет с существующим id")

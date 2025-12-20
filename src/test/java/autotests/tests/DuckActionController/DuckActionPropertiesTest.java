@@ -1,4 +1,4 @@
-package autotests.DuckActionController;
+package autotests.tests.DuckActionController;
 
 import autotests.clients.DuckActionsClient;
 import autotests.payload.DuckPropertiesResponse;
@@ -10,11 +10,9 @@ import io.qameta.allure.Feature;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
-import static com.consol.citrus.container.FinallySequence.Builder.doFinally;
-
 @Epic("Duck Action Controller")
 @Feature("Properties")
-public class DuckActionProperties extends DuckActionsClient {
+public class DuckActionPropertiesTest extends DuckActionsClient {
 
     // TODO: SHIFT-AQA-1
     @Test(description = "Получение свойств утки с четным ID и материалом wood")

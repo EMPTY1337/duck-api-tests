@@ -1,4 +1,4 @@
-package autotests.DuckController;
+package autotests.tests.DuckController;
 
 import autotests.clients.DuckActionsClient;
 import autotests.payload.DuckPropertiesResponse;
@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 
 @Epic("Duck Controller")
 @Feature("Delete")
-public class DuckDelete extends DuckActionsClient {
+public class DuckDeleteTest extends DuckActionsClient {
 
     @Test(description = "Успешное удаление уточки")
     @CitrusTest

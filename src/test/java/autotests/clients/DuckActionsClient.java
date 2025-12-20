@@ -56,33 +56,6 @@ public class DuckActionsClient extends BaseTest {
         validateDuckCount(runner, sql, "0");
     }
 
-    @Step("Проверить, что ID четный")
-    public void validateIdEven(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.run(context -> {
-            long id = Long.parseLong(context.getVariable("duckId"));
-            if (id % 2 != 0) {
-                throw new RuntimeException("Ожидался ЧЁТНЫЙ ID, получен НЕЧЁТНЫЙ: " + id);
-            }
-        });
-    }
-
-    @Step("Проверить, что ID нечетный")
-    public void validateIdOdd(@Optional @CitrusResource TestCaseRunner runner) {
-        runner.run(context -> {
-            long id = Long.parseLong(context.getVariable("duckId"));
-            if (id % 2 == 0) {
-                throw new RuntimeException("Ожидался НЕЧЁТНЫЙ ID, получен ЧЁТНЫЙ: " + id);
-            }
-        });
-    }
-
-    @Step("Валидировать ответ на обновление")
-    public void validateUpdateResponse(@Optional @CitrusResource TestCaseRunner runner,
-                                       String id) {
-        String body = "{\n \"message\": \"Duck with id = " + id + " is updated\"\n}";
-        validateWithString(runner, body);
-    }
-
     @Step("Валидировать пустой ответ для wood")
     public void validateWoodResponseEmpty(@Optional @CitrusResource TestCaseRunner runner) {
         validateWithString(runner, "{}");

@@ -1,4 +1,4 @@
-package autotests.DuckActionController;
+package autotests.tests.DuckActionController;
 
 import autotests.clients.DuckActionsClient;
 import autotests.payload.DuckActionResponse;
@@ -11,11 +11,9 @@ import io.qameta.allure.Feature;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
-import static com.consol.citrus.container.FinallySequence.Builder.doFinally;
-
 @Epic("Duck Action Controller")
 @Feature("Fly")
-public class DuckActionFly extends DuckActionsClient {
+public class DuckActionFlyTest extends DuckActionsClient {
 
     @Test(description = "Проверка полета утки с Active крыльями")
     @CitrusTest

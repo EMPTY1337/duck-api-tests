@@ -1,4 +1,4 @@
-package autotests.DuckController;
+package autotests.tests.DuckController;
 
 import autotests.clients.DuckActionsClient;
 import autotests.payload.DuckActionResponse;
@@ -11,11 +11,9 @@ import io.qameta.allure.Feature;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
-import static com.consol.citrus.container.FinallySequence.Builder.doFinally;
-
 @Epic("Duck Controller")
 @Feature("Update")
-public class DuckUpdate extends DuckActionsClient {
+public class DuckUpdateTest extends DuckActionsClient {
 
     @Test(description = "Изменить цвет и высоту уточки")
     @CitrusTest
