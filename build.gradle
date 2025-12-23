@@ -15,6 +15,7 @@ dependencies {
     testImplementation group: 'com.consol.citrus', name: 'citrus-spring', version: '3.4.0'
     testImplementation group: 'com.consol.citrus', name: 'citrus-http', version: '3.4.0'
     testImplementation group: 'com.consol.citrus', name: 'citrus-validation-json', version: '3.4.0'
+    testImplementation 'org.springframework:spring-test:5.3.30'
 
     testImplementation group: 'org.slf4j', name: 'slf4j-reload4j', version: '2.0.7'
 
